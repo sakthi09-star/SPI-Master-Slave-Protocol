@@ -44,3 +44,14 @@ Full-duplex, 8-bit data transfer, MSB first.
                                             rx_valid ◄────────────────────────┘
 
 MOSI: Master Out Slave In | MISO: Master In Slave Out | cs: Chip Select (active low)
+
+```
+
+## How SPI Works
+
+1.  **Master pulls `cs` LOW** to select Slave - Slave loads `tx_data` into `shift_tx`
+2.  **Master asserts `start_tx`** - FSM goes `IDLE -> LOAD -> TRANSFER`
+3.  **Master generates `sclk`** - toggles it in `TRANSFER` state
+4.  **On each `sclk` edge** - 1 bit is shifted on `MOSI` and `MISO` simultaneously
+5.  **Slave samples `MOSI` on rising edge** of `sclk`, shifts `MISO` on falling edge
+6.  **After 8 bits** - `bit_count == 0`, FSM goes to `DONE`, `tx_done` and `rx_valid` pulse
