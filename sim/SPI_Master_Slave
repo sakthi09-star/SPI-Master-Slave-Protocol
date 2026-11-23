@@ -20,14 +20,4 @@ timeline
         205 ns : slave_rx_data = A5
         205 ns : tx_done = 1, rx_valid = 1, slave_rx_valid = 1
 
-  sequenceDiagram
-    participant M as SPI Master
-    participant S as SPI Slave
-    Note over M,S: CPOL=0, CPHA=0, msb_first=1
-    M->>S: cs = 0 (Select Slave)
-    M->>S: sclk toggles + MOSI = A5 (1010 0101)
-    S->>M: MISO = 3C (0011 1100)
-    Note over M: master_rx_data = 3C
-    Note over S: slave_rx_data = A5
-    M->>S: cs = 1 (Deselect)
-    M->>M: tx_done = 1, rx_valid = 1
+  
