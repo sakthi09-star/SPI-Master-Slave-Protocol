@@ -14,7 +14,7 @@ Full-duplex, 8-bit data transfer, MSB first.
 - Single Slave Select (SS) - easily extendable to multi-slave
 - Synthesizable RTL - Simulation verified
 
-## Block Diagram
+
 
 ## Block Diagram
 
