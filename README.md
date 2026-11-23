@@ -20,65 +20,29 @@ Full-duplex, 8-bit data transfer, MSB first.
 
 ```mermaid
 flowchart LR
-
-    %% External Inputs
-    CLK([System Clock])
-    RST([Reset])
-    START([Start])
-    DIN([Data In 7:0])
-
-    %% SPI MASTER
     subgraph MASTER["SPI MASTER"]
-        direction TB
-
-        FSM["FSM Controller"]
-        DIV["Clock Divider"]
-        MTX["TX Shift Register"]
-        MRX["RX Shift Register"]
-
-        FSM --> DIV
-        FSM --> MTX
-        FSM --> MRX
+        FSM[FSM Controller]
+        DIV[Clock Divider]
+        TXM[TX Shift Register]
+        RXM[RX Shift Register]
     end
 
-    %% SPI SLAVE
     subgraph SLAVE["SPI SLAVE"]
-        direction TB
-
-        CTRL["Control Logic"]
-        STX["TX Shift Register"]
-        SRX["RX Shift Register"]
-
-        CTRL --> STX
-        CTRL --> SRX
+        TXS[TX Shift Register]
+        RXS[RX Shift Register]
+        CTRL[Control Logic]
     end
 
-    %% External Connections
-    CLK --> FSM
-    RST --> FSM
-    START --> FSM
-    DIN --> MTX
+    CLK[System Clock] --> DIV
+    RST[Reset] --> FSM
+    START[Start] --> FSM
+    DIN_M[Data In] --> TXM
+    TXM -->|MOSI| RXS
+    TXS -->|MISO| RXM
+    DIV -->|SCLK| CTRL
+    FSM -->|SS_n| CTRL
+    RXM --> DOUT_M[Data Out]
+    RXS --> DOUT_S[Data Out]
+    FSM --> DONE[Done]
 
-    MRX --> DOUT([Data Out 7:0])
-    FSM --> DONE([Done])
-
-    %% SPI Communication
-    MTX -->|"MOSI"| SRX
-    STX -->|"MISO"| MRX
-    DIV -->|"SCLK"| CTRL
-    FSM -->|"SS_n (Active Low)"| CTRL
-
-    %% Slave Data Interface
-    SDIN([Slave Data In 7:0]) --> STX
-    CTRL --> SDOUT([Slave Data Out 7:0])
-
-    %% Styling
-    classDef master fill:#1565C0,color:#FFFFFF,stroke:#0D47A1,stroke-width:2px;
-    classDef slave fill:#263238,color:#FFFFFF,stroke:#102027,stroke-width:2px;
-    classDef external fill:#E3F2FD,color:#102A43,stroke:#1565C0,stroke-width:1.5px;
-
-    class FSM,DIV,MTX,MRX master;
-    class CTRL,STX,SRX slave;
-    class CLK,RST,START,DIN,DOUT,DONE,SDIN,SDOUT external;
-```
-
+ 
